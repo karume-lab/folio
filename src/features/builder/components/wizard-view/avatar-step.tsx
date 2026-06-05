@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Plus, X } from "lucide-react";
 import { useRef, useState } from "react";
+import { compressImage } from "@/lib/image-utils";
 
 interface AvatarStepProps {
   profilePic: string | null;
@@ -13,27 +14,29 @@ export function AvatarStep({ profilePic, setProfilePic }: AvatarStepProps) {
   const [isDraggingPic, setIsDraggingPic] = useState(false);
   const picInputRef = useRef<HTMLInputElement>(null);
 
-  const handlePicDrop = (e: React.DragEvent) => {
+  const handlePicDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingPic(false);
     const file = e.dataTransfer.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressed = await compressImage(file);
+        setProfilePic(compressed);
+      } catch (err) {
+        console.error("Failed to compress image:", err);
+      }
     }
   };
 
-  const handlePicSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePicSelection = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressed = await compressImage(file);
+        setProfilePic(compressed);
+      } catch (err) {
+        console.error("Failed to compress image:", err);
+      }
     }
   };
 
