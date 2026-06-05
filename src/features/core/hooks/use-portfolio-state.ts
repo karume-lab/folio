@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSessionRecovery } from "@/features/core/hooks/use-session-recovery";
 import type { ChatMessage, ViewState, WizardData } from "@/features/core/types";
 import { triggerHtmlDownload as downloadHtml } from "@/features/preview/utils/download";
@@ -130,7 +130,38 @@ async function streamPortfolioGeneration(
 }
 
 export function usePortfolioState() {
-  const [view, setView] = useState<ViewState>("selection");
+  const [view, _setView] = useState<ViewState>("selection");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlView = params.get("view") as ViewState | null;
+      if (
+        urlView &&
+        ["selection", "pdf-upload", "wizard", "generating", "preview"].includes(
+          urlView,
+        )
+      ) {
+        _setView(urlView);
+      }
+    }
+  }, []);
+
+  const setView = (newView: ViewState) => {
+    _setView(newView);
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (newView === "selection") {
+        params.delete("view");
+      } else {
+        params.set("view", newView);
+      }
+      const newUrl = params.toString()
+        ? `?${params.toString()}`
+        : window.location.pathname;
+      window.history.pushState(null, "", newUrl);
+    }
+  };
   const [pdfFileName, setPdfFileName] = useState<string | null>(null);
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [personalizationPrompt, setPersonalizationPrompt] = useState("");
