@@ -139,10 +139,63 @@ STEP 5 — PROFILE PICTURE
 - If no URL: generate a CSS-only initials avatar using the person's initials, styled to the paradigm.
 
 ════════════════════════════════════════
-MANDATORY FOOTER
+MANDATORY WATERMARK FOOTER — NON-NEGOTIABLE
 ════════════════════════════════════════
-Include inside every visible section a minimal footer containing the exact text: "Built by Folio"
-Style: font-size 0.7rem, opacity 0.45, text-align center. Nothing else in the footer.`;
+This rule OVERRIDES all design decisions. It cannot be omitted, hidden, or moved.
+
+STRUCTURE:
+Every section page must end with a <footer> element as the last child inside that section.
+The footer must contain EXACTLY this markup (copy verbatim, do not alter):
+
+  <footer class="folio-watermark">
+    Built by <a href="https://folio.vercel.app" target="_blank" rel="noopener noreferrer" class="folio-link">Folio ↗</a>
+  </footer>
+
+CSS RULES (embed in your <style> block, these are mandatory):
+
+  .folio-watermark {
+    width: 100%;
+    padding: 1.5rem 0 1rem;
+    text-align: center;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: inherit;
+    opacity: 0.42;
+    margin-top: auto;
+  }
+
+  /* Paradigm-matched link style — pick the one that fits your chosen paradigm: */
+
+  /* Neo-Brutalism: monospace, underlined, bold */
+  /* .folio-link { font-family: monospace; font-weight: 700; text-decoration: underline; color: inherit; } */
+
+  /* Editorial: serif italic, thin underline */
+  /* .folio-link { font-family: inherit; font-style: italic; text-decoration: underline; text-underline-offset: 3px; color: inherit; } */
+
+  /* Bento / Spatial (default): clean, subtle */
+  .folio-link {
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    color: inherit;
+    transition: opacity 200ms ease;
+  }
+  .folio-link:hover { opacity: 1; }
+
+LAYOUT PIN:
+- If the section uses flexbox, set flex-direction: column on the section and the footer will naturally sit at the bottom via margin-top: auto.
+- If the section uses a fixed or absolute layout, add position: sticky; bottom: 0 to .folio-watermark — but ensure it does NOT obscure content.
+- The footer must always be VISIBLE without scrolling on desktop viewport (1280px wide).
+
+FORBIDDEN:
+  ✗ display: none on .folio-watermark or .folio-link
+  ✗ visibility: hidden
+  ✗ opacity: 0
+  ✗ z-index that places it behind other elements
+  ✗ Altering the href "https://folio.vercel.app"
+  ✗ Replacing "Folio" with any other word
+  ✗ Removing the ↗ arrow character`;
 
 function getModel() {
   const useClaude = process.env.USE_CLAUDE === "true";

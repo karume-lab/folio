@@ -84,7 +84,14 @@ async function streamPortfolioGeneration(
     let message = `Request failed with status ${res.status}.`;
     try {
       const payload = await res.json();
-      if (typeof payload?.error === "string") message = payload.error;
+      if (typeof payload?.error === "string") {
+        message = payload.error;
+        // Example/Instruction: If status is 429 (Rate Limit Exceeded), we can append additional context
+        // like resetsInMinutes to guide the user on when they can try generating again.
+        if (res.status === 429 && typeof payload.resetsInMinutes === "number") {
+          message += ` (Resets in ${payload.resetsInMinutes} minutes)`;
+        }
+      }
     } catch {
       // ignore — use the default message
     }
