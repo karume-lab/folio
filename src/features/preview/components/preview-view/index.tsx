@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { IframeContainer } from "@/folio-app/components/preview-view/iframe-container";
-import { IterationBar } from "@/folio-app/components/preview-view/iteration-bar";
-import type { usePortfolioState } from "@/folio-app/hooks/use-portfolio-state";
+import type { usePortfolioState } from "@/features/core/hooks/use-portfolio-state";
+import { IframeContainer } from "@/features/preview/components/preview-view/iframe-container";
+import { IterationBar } from "@/features/preview/components/preview-view/iteration-bar";
 
 interface PreviewViewProps {
   state: ReturnType<typeof usePortfolioState>;

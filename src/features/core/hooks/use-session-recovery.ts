@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { ViewState, WizardData } from "@/folio-app/types";
+import type { ViewState, WizardData } from "@/features/core/types";
 
 interface SessionRecoveryProps {
   view: ViewState;

@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Upload } from "lucide-react";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
-import type { usePortfolioState } from "@/folio-app/hooks/use-portfolio-state";
+import type { usePortfolioState } from "@/features/core/hooks/use-portfolio-state";
 
 interface SelectionViewProps {
   state: ReturnType<typeof usePortfolioState>;

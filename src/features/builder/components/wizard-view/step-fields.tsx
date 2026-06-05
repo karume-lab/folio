@@ -4,8 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { AvatarStep } from "@/folio-app/components/wizard-view/avatar-step";
-import type { WizardData } from "@/folio-app/types";
+import { AvatarStep } from "@/features/builder/components/wizard-view/avatar-step";
+import type { WizardData } from "@/features/core/types";
 
 interface StepFieldsProps {
   wizardStep: number;

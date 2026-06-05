@@ -2,7 +2,7 @@
 
 import { ArrowRight, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { ViewState, WizardData } from "@/folio-app/types";
+import type { ViewState, WizardData } from "@/features/core/types";
 
 interface WizardNavProps {
   wizardStep: number;

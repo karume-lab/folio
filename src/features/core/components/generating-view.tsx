@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { AlertTriangle, Cpu, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import type { usePortfolioState } from "@/folio-app/hooks/use-portfolio-state";
+import type { usePortfolioState } from "@/features/core/hooks/use-portfolio-state";
 
 interface GeneratingViewProps {
   state: ReturnType<typeof usePortfolioState>;

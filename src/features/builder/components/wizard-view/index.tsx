@@ -3,9 +3,9 @@
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { StepFields } from "@/folio-app/components/wizard-view/step-fields";
-import { WizardNav } from "@/folio-app/components/wizard-view/wizard-nav";
-import type { usePortfolioState } from "@/folio-app/hooks/use-portfolio-state";
+import { StepFields } from "@/features/builder/components/wizard-view/step-fields";
+import { WizardNav } from "@/features/builder/components/wizard-view/wizard-nav";
+import type { usePortfolioState } from "@/features/core/hooks/use-portfolio-state";
 
 interface WizardViewProps {
   state: ReturnType<typeof usePortfolioState>;

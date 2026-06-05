@@ -4,12 +4,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { GeneratingView } from "@/folio-app/components/generating-view";
-import { PdfUploadView } from "@/folio-app/components/pdf-upload-view";
-import { PreviewView } from "@/folio-app/components/preview-view";
-import { SelectionView } from "@/folio-app/components/selection-view";
-import { WizardView } from "@/folio-app/components/wizard-view";
-import { usePortfolioState } from "@/folio-app/hooks/use-portfolio-state";
+import { PdfUploadView } from "@/features/builder/components/pdf-upload-view";
+import { WizardView } from "@/features/builder/components/wizard-view";
+import { GeneratingView } from "@/features/core/components/generating-view";
+import { SelectionView } from "@/features/core/components/selection-view";
+import { usePortfolioState } from "@/features/core/hooks/use-portfolio-state";
+import { PreviewView } from "@/features/preview/components/preview-view";
 
 export function FolioAppOrchestrator() {
   const state = usePortfolioState();

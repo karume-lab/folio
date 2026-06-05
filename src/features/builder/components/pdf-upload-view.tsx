@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { PdfUploadPicZone } from "@/folio-app/components/pdf-upload-pic-zone";
-import type { usePortfolioState } from "@/folio-app/hooks/use-portfolio-state";
+import { PdfUploadPicZone } from "@/features/builder/components/pdf-upload-pic-zone";
+import type { usePortfolioState } from "@/features/core/hooks/use-portfolio-state";
 
 interface PdfUploadViewProps {
   state: ReturnType<typeof usePortfolioState>;

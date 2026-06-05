@@ -4,7 +4,7 @@ import { RefreshCw, Send } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { ChatMessage } from "@/folio-app/types";
+import type { ChatMessage } from "@/features/core/types";
 
 interface IterationBarProps {
   chatHistory: ChatMessage[];

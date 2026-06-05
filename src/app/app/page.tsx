@@ -1,4 +1,4 @@
-import { FolioAppOrchestrator } from "@/folio-app/components/folio-app-orchestrator";
+import { FolioAppOrchestrator } from "@/features/core/components/folio-app-orchestrator";
 
 export const metadata = {
   title: "Folio Engine - Build Your Portfolio",
