@@ -158,6 +158,11 @@ export function usePortfolioState() {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isRevising, setIsRevising] = useState(false);
 
+  // Deploy state
+  const [isDeploying, setIsDeploying] = useState(false);
+  const [deployedUrl, setDeployedUrl] = useState<string | null>(null);
+  const [deployError, setDeployError] = useState<string | null>(null);
+
   // Chat history for iterative revisions (AI SDK message format)
   const [apiMessages, setApiMessages] = useState<
     Array<{ role: "user" | "assistant"; content: string }>
@@ -328,6 +333,35 @@ export function usePortfolioState() {
     }
   };
 
+  /** Deploy portfolio to Firestore and return a live shareable URL */
+  const handleDeploySite = async (htmlContent: string) => {
+    setIsDeploying(true);
+    setDeployedUrl(null);
+    setDeployError(null);
+
+    try {
+      const res = await fetch("/api/deploy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ htmlContent, userId: "anonymous" }),
+      });
+
+      if (!res.ok) {
+        const payload = await res.json().catch(() => ({}));
+        throw new Error(payload.error ?? `Deploy failed (${res.status})`);
+      }
+
+      const data = await res.json();
+      const liveUrl = `${window.location.origin}/site/${data.deploymentId}`;
+      setDeployedUrl(liveUrl);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Deployment failed.";
+      setDeployError(msg);
+    } finally {
+      setIsDeploying(false);
+    }
+  };
+
   // Triggers download of compiled index.html
   const triggerHtmlDownload = () => {
     downloadHtml(generatedHtml);
@@ -369,5 +403,11 @@ export function usePortfolioState() {
     startPortfolioGeneration,
     applyRevision,
     triggerHtmlDownload,
+    // Deploy
+    isDeploying,
+    deployedUrl,
+    setDeployedUrl,
+    deployError,
+    handleDeploySite,
   };
 }
