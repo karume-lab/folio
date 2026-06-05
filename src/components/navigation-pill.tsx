@@ -3,6 +3,7 @@
 import { Cpu, Layers, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { SiteLogo } from "@/components/site-logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -77,6 +78,10 @@ export function NavigationPill() {
                 </Tooltip>
               </NavigationMenuItem>
             ))}
+
+            <NavigationMenuItem>
+              <ThemeToggle />
+            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
       </TooltipProvider>

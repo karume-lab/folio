@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background text-muted-foreground selection:bg-primary/30 selection:text-primary-foreground overflow-x-hidden font-sans dark">
+    <div className="min-h-screen bg-background text-muted-foreground selection:bg-primary/30 selection:text-primary-foreground overflow-x-hidden font-sans">
       {/* Background Glow Elements */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-150 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-10%] left-[10%] w-[40%] h-[60%] rounded-full bg-brand-purple/15 blur-[120px]" />

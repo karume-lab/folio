@@ -4,6 +4,7 @@ import { BackToTopButton } from "@/components/back-to-top-button";
 import { ChangeMetadataTitleOnBlur } from "@/components/change-metadata-title-on-blur";
 import SEOConfig, { metadataConfig } from "@/components/seo-config";
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -36,16 +37,24 @@ export default function RootLayout({
         "font-sans",
         inter.variable,
       )}
+      suppressHydrationWarning
     >
       <head>
         <SEOConfig />
       </head>
       <body className="min-h-full flex flex-col">
-        <SmoothScrollProvider>
-          <ChangeMetadataTitleOnBlur />
-          <BackToTopButton />
-          <main className="flex-1">{children}</main>
-        </SmoothScrollProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SmoothScrollProvider>
+            <ChangeMetadataTitleOnBlur />
+            <BackToTopButton />
+            <main className="flex-1">{children}</main>
+          </SmoothScrollProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
