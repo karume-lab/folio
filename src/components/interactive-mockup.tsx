@@ -173,7 +173,6 @@ export function InteractiveMockup() {
                 isLoading={isGenerating}
                 onClick={handleSimulateGeneration}
               >
-                <RefreshCw className="h-4 w-4" />
                 Generate with Folio
               </Button>
             </div>
@@ -290,8 +289,21 @@ export function InteractiveMockup() {
                 </div>
 
                 <div className="mt-8 pt-4 border-t border-current/10 flex justify-between items-center text-[9px] opacity-60">
-                  <span>© 2026 John Doe.</span>
-                  <span className="font-semibold">[Built by Folio]</span>
+                  <span>&copy; 2026 John Doe.</span>
+                  <span>
+                    Built by{" "}
+                    <a
+                      href={
+                        process.env.NEXT_PUBLIC_APP_URL ||
+                        "https://folio.vercel.app"
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline font-semibold hover:opacity-100 transition-opacity"
+                    >
+                      Folio ↗
+                    </a>
+                  </span>
                 </div>
               </div>
             )}

@@ -70,7 +70,7 @@ export function GeneratingView({ state }: GeneratingViewProps) {
 
       <div className="space-y-2">
         <h1 className="text-xl font-bold text-foreground">
-          Designing your portfolio...
+          Build portfolio layout
         </h1>
         <p className="text-xs text-muted-foreground/80 italic font-mono h-4">
           {state.generationPhase}

@@ -92,7 +92,7 @@ export function PdfUploadView({ state }: PdfUploadViewProps) {
               <>
                 <RefreshCw className="h-9 w-9 text-brand-purple animate-spin mb-3" />
                 <p className="text-sm font-semibold text-foreground">
-                  Extracting resume text...
+                  Extract resume text
                 </p>
                 <p className="text-xs text-muted-foreground/70 mt-1">
                   This only takes a moment.

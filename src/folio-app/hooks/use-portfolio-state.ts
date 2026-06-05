@@ -8,11 +8,11 @@ import { triggerHtmlDownload as downloadHtml } from "@/folio-app/utils/download"
 // MOCK_DEVOPS removed — real PDF text is now extracted via /api/parse-pdf
 
 const GENERATION_PHASES = [
-  { max: 20, text: "Analyzing input constraints..." },
-  { max: 45, text: "Extracting credentials and keywords..." },
-  { max: 70, text: "Compiling layout aesthetics..." },
-  { max: 90, text: "Writing Tailwind styling classes..." },
-  { max: 100, text: "Publishing responsive sandbox DOM..." },
+  { max: 20, text: "Analyze input constraints" },
+  { max: 45, text: "Extract credentials and keywords" },
+  { max: 70, text: "Compile layout aesthetics" },
+  { max: 90, text: "Write Tailwind styling classes" },
+  { max: 100, text: "Publish responsive sandbox DOM" },
 ];
 
 /** Build the user message content sent to the generation API. */
@@ -152,7 +152,7 @@ export function usePortfolioState() {
   // Generating Screen progress
   const [generationProgress, setGenerationProgress] = useState(0);
   const [generationPhase, setGenerationPhase] = useState(
-    "Initializing generator context...",
+    "Initialize generator context",
   );
   const [generationError, setGenerationError] = useState<string | null>(null);
 
@@ -273,7 +273,7 @@ export function usePortfolioState() {
 
       stopProgress();
       setGenerationProgress(100);
-      setGenerationPhase("Publishing responsive sandbox DOM...");
+      setGenerationPhase("Publish responsive sandbox DOM");
 
       setGeneratedHtml(html);
       // Store a sentinel instead of raw HTML to prevent token-limit blowout

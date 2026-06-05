@@ -77,7 +77,7 @@ export function IterationBar({
               </span>
               <div className="bg-secondary/40 text-muted-foreground/90 border border-border/30 p-3 rounded-2xl rounded-tl-none flex items-center gap-2 text-xs">
                 <RefreshCw className="h-3.5 w-3.5 text-brand-purple animate-spin" />
-                <span>Updating styled templates...</span>
+                <span>Update styled templates</span>
               </div>
             </div>
           )}
