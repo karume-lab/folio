@@ -2,6 +2,10 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { groq } from "@ai-sdk/groq";
 import { type ModelMessage, streamText } from "ai";
 import { type NextRequest, NextResponse } from "next/server";
+import {
+  getGenerationRatelimiter,
+  resolveIdentifier,
+} from "@/lib/ratelimit";
 
 export const maxDuration = 60;
 
@@ -161,8 +165,10 @@ function getModel() {
 export async function POST(req: NextRequest) {
   let messages: ModelMessage[];
 
+  // Hoist body so it is accessible outside the try block (e.g. for rate limiting).
+  let body: Awaited<ReturnType<typeof req.json>>;
   try {
-    const body = await req.json();
+    body = await req.json();
     if (!Array.isArray(body?.messages) || body.messages.length === 0) {
       return NextResponse.json(
         { error: "Invalid request: 'messages' must be a non-empty array." },
@@ -176,6 +182,53 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
   }
+
+  // ── Rate Limiting ────────────────────────────────────────────────────────
+  // Identify the client, then check the sliding-window budget (3 / 24h).
+  // If Upstash env vars are absent (local dev without Redis), we skip and warn.
+  const identifier = resolveIdentifier(req, body?.userId);
+  try {
+    const limiter = getGenerationRatelimiter();
+    const { success, limit, reset } =
+      await limiter.limit(identifier);
+
+    if (!success) {
+      const resetInMinutes = Math.ceil((reset - Date.now()) / 1000 / 60);
+      return NextResponse.json(
+        {
+          error:
+            "Daily limit reached. You can only generate 3 portfolios per 24 hours.",
+          limit,
+          remaining: 0,
+          resetsInMinutes: resetInMinutes,
+        },
+        {
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": String(limit),
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": String(reset),
+            "Retry-After": String(resetInMinutes * 60),
+          },
+        },
+      );
+    }
+  } catch (err) {
+    // Missing Upstash credentials → skip rate limiting in local dev.
+    // In production this should never be caught — treat as a fatal config error.
+    if (
+      err instanceof Error &&
+      err.message.includes("Missing Upstash credentials")
+    ) {
+      console.warn(
+        "[ratelimit] Upstash not configured — skipping rate limit check.",
+      );
+    } else {
+      // Unexpected Redis error — fail open to avoid blocking all users.
+      console.error("[ratelimit] Unexpected error:", err);
+    }
+  }
+  // ── End Rate Limiting ────────────────────────────────────────────────────
 
   let model: ReturnType<typeof getModel>;
   try {
