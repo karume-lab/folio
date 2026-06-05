@@ -36,37 +36,43 @@ export function FolioAppOrchestrator() {
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
-            className="fixed bottom-6 right-6 z-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-border bg-card/90 p-4.5 pr-10 shadow-2xl backdrop-blur-xl max-w-md w-[calc(100vw-3rem)]"
+            className="fixed bottom-6 right-6 z-50 max-w-md w-[calc(100vw-3rem)]"
           >
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              onClick={() => state.setToast(null)}
-              className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
-              aria-label="Dismiss notification"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-            <div className="flex items-center gap-2 text-foreground">
-              <AlertCircle className="h-5 w-5 text-brand-pink shrink-0" />
-              <span className="text-sm font-medium">{state.toast.message}</span>
-            </div>
-            <div className="flex gap-2 w-full sm:w-auto shrink-0 justify-end mt-2 sm:mt-0">
-              <Button
-                size="xs"
-                className="bg-brand-purple text-foreground hover:bg-brand-purple/90 font-bold px-3.5 py-1 text-xs"
-                onClick={state.handleResumeSession}
-              >
-                Resume
-              </Button>
-              <Button
-                variant="outline"
-                size="xs"
-                className="border-border text-foreground hover:bg-secondary font-semibold px-3 py-1 text-xs"
-                onClick={state.handleStartFresh}
-              >
-                Start Fresh
-              </Button>
+            <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-border bg-card/90 p-4.5 pr-10 shadow-2xl backdrop-blur-xl w-full">
+              <div className="absolute top-3 right-3">
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => state.setToast(null)}
+                  className="text-muted-foreground hover:text-foreground"
+                  aria-label="Dismiss notification"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex items-center gap-2 text-foreground">
+                <AlertCircle className="h-5 w-5 text-brand-pink shrink-0" />
+                <span className="text-sm font-medium">
+                  {state.toast.message}
+                </span>
+              </div>
+              <div className="flex gap-2 w-full sm:w-auto shrink-0 justify-end mt-2 sm:mt-0">
+                <Button
+                  size="xs"
+                  className="bg-brand-purple text-foreground hover:bg-brand-purple/90 font-bold px-3.5 py-1 text-xs"
+                  onClick={state.handleResumeSession}
+                >
+                  Resume
+                </Button>
+                <Button
+                  variant="outline"
+                  size="xs"
+                  className="border-border text-foreground hover:bg-secondary font-semibold px-3 py-1 text-xs"
+                  onClick={state.handleStartFresh}
+                >
+                  Start Fresh
+                </Button>
+              </div>
             </div>
           </motion.div>
         )}
