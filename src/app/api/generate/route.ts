@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Rate Limiting ────────────────────────────────────────────────────────
-  // Identify the client, then check the sliding-window budget (3 / 24h).
+  // Identify the client, then check the sliding-window budget (10 / 24h).
   // If Upstash env vars are absent (local dev without Redis), we skip and warn.
   const identifier = resolveIdentifier(req, body?.userId);
   try {
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Daily limit reached. You can only generate 3 portfolios per 24 hours.",
+            "Daily limit reached. You can only generate 10 portfolios per 24 hours.",
           limit,
           remaining: 0,
           resetsInMinutes: resetInMinutes,

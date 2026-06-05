@@ -1,7 +1,7 @@
 /**
  * Upstash Redis + Sliding Window Rate Limiter
  *
- * Limit: 3 portfolio generations per 24 hours per user/IP.
+ * Limit: 10 portfolio generations per 24 hours per user/IP.
  *
  * Required environment variables (add to .env.local):
  *   UPSTASH_REDIS_REST_URL    — from Upstash console → Redis → REST API
@@ -30,9 +30,9 @@ export function getGenerationRatelimiter(): Ratelimit {
 
   _ratelimit = new Ratelimit({
     redis,
-    // Sliding window: smoothly distributes the 3-request budget over 24 h.
-    // A fixed window would allow bursting 3 requests at 23:59 and 3 more at 00:01.
-    limiter: Ratelimit.slidingWindow(3, "24 h"),
+    // Sliding window: smoothly distributes the 10-request budget over 24 h.
+    // A fixed window would allow bursting 10 requests at 23:59 and 10 more at 00:01.
+    limiter: Ratelimit.slidingWindow(10, "24 h"),
     analytics: true, // store per-identifier metrics in Upstash for observability
     prefix: "folio:gen",
   });
