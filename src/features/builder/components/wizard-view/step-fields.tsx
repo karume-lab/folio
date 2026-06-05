@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +23,29 @@ export function StepFields({
   profilePic,
   setProfilePic,
 }: StepFieldsProps) {
+  const [localData, setLocalData] = useState<WizardData>(wizardData);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync when parent changes (e.g. initial load or external update)
+  useEffect(() => {
+    setLocalData(wizardData);
+  }, [wizardData]);
+
+  // Update local immediately, debounce update to parent
+  const updateField = useCallback(
+    (field: keyof WizardData, value: string) => {
+      setLocalData((prev) => {
+        const next = { ...prev, [field]: value } as WizardData;
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+          setWizardData(next);
+        }, 300);
+        return next;
+      });
+    },
+    [setWizardData],
+  );
+
   return (
     <AnimatePresence mode="wait">
       {wizardStep === 1 && (
@@ -42,10 +66,8 @@ export function StepFields({
             <Input
               id="name-input"
               placeholder="e.g. John Doe"
-              value={wizardData.name}
-              onChange={(e) =>
-                setWizardData((prev) => ({ ...prev, name: e.target.value }))
-              }
+              value={localData.name}
+              onChange={(e) => updateField("name", e.target.value)}
               className="bg-background/20 border-border text-foreground rounded-xl"
             />
           </div>
@@ -59,10 +81,8 @@ export function StepFields({
             <Input
               id="headline-input"
               placeholder="e.g. Lead Software Engineer specializing in Next.js"
-              value={wizardData.headline}
-              onChange={(e) =>
-                setWizardData((prev) => ({ ...prev, headline: e.target.value }))
-              }
+              value={localData.headline}
+              onChange={(e) => updateField("headline", e.target.value)}
               className="bg-background/20 border-border text-foreground rounded-xl"
             />
           </div>
@@ -86,13 +106,8 @@ export function StepFields({
           <Textarea
             id="achievements-input"
             placeholder="Shipped an open-source deployments engine reaching 2k stars.&#10;Decreased React client bundle weights by 45%.&#10;Mentored 10+ software engineers on Next.js architectures."
-            value={wizardData.achievements}
-            onChange={(e) =>
-              setWizardData((prev) => ({
-                ...prev,
-                achievements: e.target.value,
-              }))
-            }
+            value={localData.achievements}
+            onChange={(e) => updateField("achievements", e.target.value)}
             className="bg-background/20 border-border text-foreground rounded-xl text-xs py-3 h-32 placeholder:text-muted-foreground/40"
           />
         </motion.div>
@@ -115,10 +130,8 @@ export function StepFields({
           <Input
             id="skills-input"
             placeholder="e.g. Next.js, React, TypeScript, Tailwind CSS, AWS"
-            value={wizardData.skills}
-            onChange={(e) =>
-              setWizardData((prev) => ({ ...prev, skills: e.target.value }))
-            }
+            value={localData.skills}
+            onChange={(e) => updateField("skills", e.target.value)}
             className="bg-background/20 border-border text-foreground rounded-xl"
           />
         </motion.div>
@@ -141,10 +154,8 @@ export function StepFields({
           <Textarea
             id="vibe-input"
             placeholder="e.g. Minimalist slate dark layout, high contrast white text, clean grids."
-            value={wizardData.vibe}
-            onChange={(e) =>
-              setWizardData((prev) => ({ ...prev, vibe: e.target.value }))
-            }
+            value={localData.vibe}
+            onChange={(e) => updateField("vibe", e.target.value)}
             className="bg-background/20 border-border text-foreground rounded-xl text-xs py-3 h-28 placeholder:text-muted-foreground/40"
           />
         </motion.div>
