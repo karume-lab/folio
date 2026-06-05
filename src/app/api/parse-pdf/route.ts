@@ -38,14 +38,9 @@ export async function POST(req: NextRequest) {
 
   const buffer = Buffer.from(await typedFile.arrayBuffer());
 
-  // Dynamic import prevents Next.js from bundling pdf-parse, which would break
-  // its internal pdfjs version resolution.
-  const { default: pdfParse } = (await import("pdf-parse")) as unknown as {
-    default: (
-      buffer: Buffer,
-      options?: Record<string, unknown>,
-    ) => Promise<{ text: string }>;
-  };
+  // Dynamic import prevents Next.js from bundling pdf-parse at build time.
+  // pdf-parse v2 uses a class-based API — no default export, no version option.
+  const { PDFParse } = await import("pdf-parse");
 
   // Suppress noisy pdfjs-dist warnings that are harmless in a server context:
   //   - "Setting up fake worker" — expected when running without a Web Worker
@@ -55,9 +50,8 @@ export async function POST(req: NextRequest) {
 
   let text = "";
   try {
-    // `version: 'v1.10.100'` directs pdf-parse to use the legacy pdfjs build
-    // which is worker-free and designed for Node.js server environments.
-    const data = await pdfParse(buffer, { version: "v1.10.100" });
+    const parser = new PDFParse({ data: buffer });
+    const data = await parser.getText();
     text = data.text;
   } catch (error) {
     console.error("[parse-pdf] Parsing error:", error);
