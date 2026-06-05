@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { PDFParser } from "pdf2json";
+import PDFParser from "pdf2json";
 
 // Strictly enforce Node runtime — Edge runtime lacks Buffer and fs APIs.
 export const runtime = "nodejs";
