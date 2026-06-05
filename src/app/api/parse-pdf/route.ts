@@ -1,9 +1,32 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { PDFParser } from "pdf2json";
 
 // Strictly enforce Node runtime — Edge runtime lacks Buffer and fs APIs.
 export const runtime = "nodejs";
 // Prevent Vercel timeouts for larger PDFs.
 export const maxDuration = 60;
+
+/**
+ * Parses a PDF buffer using pdf2json (pure-JS, no native canvas dependencies).
+ * Wraps the event-emitter API in a Promise for clean async/await usage.
+ */
+function parsePdfBuffer(buffer: Buffer): Promise<string> {
+  return new Promise((resolve, reject) => {
+    // needRawText=true tells pdf2json to populate getRawTextContent()
+    const parser = new PDFParser(null, true);
+
+    parser.on("pdfParser_dataError", (err) => {
+      reject(err instanceof Error ? err : new Error(String(err)));
+    });
+
+    parser.on("pdfParser_dataReady", () => {
+      resolve(parser.getRawTextContent());
+    });
+
+    // verbosity=0 silences pdfjs-dist console noise
+    parser.parseBuffer(buffer, 0);
+  });
+}
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
@@ -38,30 +61,15 @@ export async function POST(req: NextRequest) {
 
   const buffer = Buffer.from(await typedFile.arrayBuffer());
 
-  // Dynamic import prevents Next.js from bundling pdf-parse at build time.
-  // pdf-parse v2 uses a class-based API — no default export, no version option.
-  const { PDFParse } = await import("pdf-parse");
-
-  // Suppress noisy pdfjs-dist warnings that are harmless in a server context:
-  //   - "Setting up fake worker" — expected when running without a Web Worker
-  //   - "Unsupported: field.type of Link" / "NOT valid form element"
-  const originalWarn = console.warn;
-  console.warn = () => {};
-
   let text = "";
   try {
-    const parser = new PDFParse({ data: buffer });
-    const data = await parser.getText();
-    text = data.text;
+    text = await parsePdfBuffer(buffer);
   } catch (error) {
     console.error("[parse-pdf] Parsing error:", error);
     return NextResponse.json(
       { error: "Failed to parse PDF document." },
       { status: 500 },
     );
-  } finally {
-    // Always restore console.warn, even if parsing throws.
-    console.warn = originalWarn;
   }
 
   if (!text?.trim()) {
