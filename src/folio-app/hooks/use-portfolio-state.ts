@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useSessionRecovery } from "@/folio-app/hooks/use-session-recovery";
 import type { ChatMessage, ViewState, WizardData } from "@/folio-app/types";
-import { compilePortfolioHTML } from "@/folio-app/utils/compile-html";
 import { triggerHtmlDownload as downloadHtml } from "@/folio-app/utils/download";
 import { MOCK_DEVOPS } from "@/folio-app/utils/mock-data";
 
@@ -14,6 +13,71 @@ const GENERATION_PHASES = [
   { max: 90, text: "Writing Tailwind styling classes..." },
   { max: 100, text: "Publishing responsive sandbox DOM..." },
 ];
+
+/** Build the user message content sent to the generation API. */
+function buildUserPrompt(opts: {
+  pdfFileName: string | null;
+  profilePic: string | null;
+  personalizationPrompt: string;
+  wizardData: WizardData;
+}): string {
+  const { pdfFileName, profilePic, personalizationPrompt, wizardData } = opts;
+
+  const picLine = profilePic
+    ? `Profile picture URL: ${profilePic}`
+    : "No profile picture provided.";
+
+  if (pdfFileName) {
+    return `Generate a professional portfolio website based on the following details.
+${picLine}
+PDF Resume filename: ${pdfFileName}
+Developer profile (extracted mock data):
+- Name: ${MOCK_DEVOPS.name}
+- Headline: ${MOCK_DEVOPS.headline}
+- Achievements: ${MOCK_DEVOPS.achievements}
+- Skills: ${MOCK_DEVOPS.skills}
+Design preferences / personalization: ${personalizationPrompt || "Modern dark theme, clean layout."}`;
+  }
+
+  return `Generate a professional portfolio website based on the following details.
+${picLine}
+- Name: ${wizardData.name || "Developer"}
+- Headline: ${wizardData.headline || "Software Engineer"}
+- Key Achievements: ${wizardData.achievements || "Experienced developer with multiple shipped products."}
+- Skills: ${wizardData.skills || "JavaScript, TypeScript, React, Node.js"}
+- Design vibe / style preference: ${wizardData.vibe || "Modern dark theme, clean layout."}`;
+}
+
+/** Stream from /api/generate and accumulate HTML chunks into a string. */
+async function streamPortfolioGeneration(
+  messages: Array<{ role: "user" | "assistant"; content: string }>,
+  onChunk: (partial: string) => void,
+): Promise<string> {
+  const res = await fetch("/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages }),
+  });
+
+  if (!res.ok || !res.body) {
+    const err = await res.json().catch(() => ({ error: "Generation failed." }));
+    throw new Error(err.error ?? "Generation failed.");
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let fullHtml = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    fullHtml += chunk;
+    onChunk(fullHtml);
+  }
+
+  return fullHtml;
+}
 
 export function usePortfolioState() {
   const [view, setView] = useState<ViewState>("selection");
@@ -40,12 +104,18 @@ export function usePortfolioState() {
   const [generationPhase, setGenerationPhase] = useState(
     "Initializing generator context...",
   );
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   // Compiled portfolio outputs
   const [generatedHtml, setGeneratedHtml] = useState("");
   const [chatInput, setChatInput] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isRevising, setIsRevising] = useState(false);
+
+  // Chat history for iterative revisions (AI SDK message format)
+  const [apiMessages, setApiMessages] = useState<
+    Array<{ role: "user" | "assistant"; content: string }>
+  >([]);
 
   // Session draft recovery & auto-persistence
   const { toast, setToast, handleResumeSession, handleStartFresh } =
@@ -63,97 +133,119 @@ export function usePortfolioState() {
       setWizardData,
     });
 
-  // Launch Simulated Generation State
-  const startPortfolioGeneration = () => {
-    setView("generating");
+  /** Animate the progress bar independently during streaming */
+  const runProgressAnimation = (): (() => void) => {
     setGenerationProgress(0);
+    let current = 0;
 
-    let currentProgress = 0;
     const interval = setInterval(() => {
-      currentProgress += Math.floor(Math.random() * 8) + 4;
-      if (currentProgress >= 100) {
-        currentProgress = 100;
-        clearInterval(interval);
-        setTimeout(() => {
-          // Build preview based on active choice path
-          let html = "";
-          if (pdfFileName) {
-            html = compilePortfolioHTML(
-              MOCK_DEVOPS.name,
-              MOCK_DEVOPS.headline,
-              MOCK_DEVOPS.achievements,
-              MOCK_DEVOPS.skills,
-              personalizationPrompt,
-            );
-          } else {
-            html = compilePortfolioHTML(
-              wizardData.name,
-              wizardData.headline,
-              wizardData.achievements,
-              wizardData.skills,
-              wizardData.vibe,
-            );
-          }
-
-          setGeneratedHtml(html);
-          setView("preview");
-          setChatHistory([
-            {
-              sender: "system",
-              text: "Hello! I have generated your customized portfolio preview. You can iterate on details (e.g., 'make the background neon', 'tweak the headlines') using the refinement box below.",
-            },
-          ]);
-        }, 500);
-      }
-
-      setGenerationProgress(currentProgress);
-      const phase = GENERATION_PHASES.find((p) => currentProgress <= p.max);
+      // Slow down as we approach 90% — let the real completion trigger 100%
+      const increment = current < 70
+        ? Math.floor(Math.random() * 6) + 3
+        : Math.floor(Math.random() * 2) + 1;
+      current = Math.min(current + increment, 92);
+      setGenerationProgress(current);
+      const phase = GENERATION_PHASES.find((p) => current <= p.max);
       if (phase) setGenerationPhase(phase.text);
-    }, 180);
+    }, 220);
+
+    return () => clearInterval(interval);
   };
 
-  // Iterative Revision Submission
-  const applyRevision = (userText: string) => {
+  /** Launch real AI portfolio generation */
+  const startPortfolioGeneration = async () => {
+    setView("generating");
+    setGenerationError(null);
+
+    const userPrompt = buildUserPrompt({
+      pdfFileName,
+      profilePic,
+      personalizationPrompt,
+      wizardData,
+    });
+
+    const initialMessages: Array<{ role: "user" | "assistant"; content: string }> = [
+      { role: "user", content: userPrompt },
+    ];
+    setApiMessages(initialMessages);
+
+    const stopProgress = runProgressAnimation();
+
+    try {
+      const html = await streamPortfolioGeneration(
+        initialMessages,
+        (partial) => setGeneratedHtml(partial),
+      );
+
+      stopProgress();
+      setGenerationProgress(100);
+      setGenerationPhase("Publishing responsive sandbox DOM...");
+
+      setGeneratedHtml(html);
+      setApiMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: html },
+      ]);
+
+      setTimeout(() => {
+        setView("preview");
+        setChatHistory([
+          {
+            sender: "system",
+            text: "Your portfolio has been generated! You can iterate on details — try 'change the color scheme to midnight blue' or 'add a testimonials section'.",
+          },
+        ]);
+      }, 400);
+    } catch (err) {
+      stopProgress();
+      const msg = err instanceof Error ? err.message : "Generation failed.";
+      setGenerationError(msg);
+      setGenerationPhase("Generation failed.");
+    }
+  };
+
+  /** Iterative AI revision — sends conversation history back to the API */
+  const applyRevision = async (userText: string) => {
     setChatHistory((prev) => [...prev, { sender: "user", text: userText }]);
     setIsRevising(true);
 
-    setTimeout(() => {
-      setIsRevising(false);
+    const updatedMessages: Array<{ role: "user" | "assistant"; content: string }> = [
+      ...apiMessages,
+      { role: "user", content: userText },
+    ];
+    setApiMessages(updatedMessages);
+
+    try {
+      const html = await streamPortfolioGeneration(
+        updatedMessages,
+        (partial) => setGeneratedHtml(partial),
+      );
+
+      setGeneratedHtml(html);
+      setApiMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: html },
+      ]);
+
       setChatHistory((prev) => [
         ...prev,
         {
           sender: "system",
-          text: `Understood. Re-compiling styles and modifying layout structures to reflect your suggestion: "${userText}".`,
+          text: `Done! I've updated your portfolio based on: "${userText}". Keep refining as needed.`,
         },
       ]);
-
-      // Regenerate with adjusted vibes
-      let name = wizardData.name;
-      let headline = wizardData.headline;
-      let achievements = wizardData.achievements;
-      let skills = wizardData.skills;
-      let promptVal = personalizationPrompt;
-
-      if (pdfFileName) {
-        name = MOCK_DEVOPS.name;
-        headline = MOCK_DEVOPS.headline;
-        achievements = MOCK_DEVOPS.achievements;
-        skills = MOCK_DEVOPS.skills;
-        promptVal = `${promptVal} ${userText}`;
-        setPersonalizationPrompt(promptVal);
-      } else {
-        const updatedVibe = `${wizardData.vibe} ${userText}`;
-        setWizardData((prev) => ({ ...prev, vibe: updatedVibe }));
-        promptVal = updatedVibe;
-      }
-
-      setGeneratedHtml(
-        compilePortfolioHTML(name, headline, achievements, skills, promptVal),
-      );
-    }, 1500);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Revision failed.";
+      setChatHistory((prev) => [
+        ...prev,
+        { sender: "system", text: `❌ ${msg}` },
+      ]);
+    } finally {
+      setIsRevising(false);
+    }
   };
 
-  // Triggers mock download of compiled index.html
+  // Triggers download of compiled index.html
   const triggerHtmlDownload = () => {
     downloadHtml(generatedHtml);
   };
@@ -177,6 +269,7 @@ export function usePortfolioState() {
     setIsDraggingPic,
     generationProgress,
     generationPhase,
+    generationError,
     generatedHtml,
     chatInput,
     setChatInput,

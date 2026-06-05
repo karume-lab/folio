@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Cpu } from "lucide-react";
+import { AlertTriangle, Cpu, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import type { usePortfolioState } from "@/folio-app/hooks/use-portfolio-state";
 
@@ -10,6 +11,46 @@ interface GeneratingViewProps {
 }
 
 export function GeneratingView({ state }: GeneratingViewProps) {
+  if (state.generationError) {
+    return (
+      <motion.main
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0 }}
+        className="max-w-md mx-auto px-6 py-20 w-full text-center flex flex-col items-center justify-center gap-6"
+      >
+        <div className="relative h-20 w-20 flex items-center justify-center bg-destructive/10 border border-destructive/30 rounded-2xl mb-2">
+          <AlertTriangle className="h-10 w-10 text-destructive" />
+        </div>
+
+        <div className="space-y-2">
+          <h1 className="text-xl font-bold text-foreground">Generation Failed</h1>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
+            {state.generationError}
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => state.setView("selection")}
+          >
+            Start Over
+          </Button>
+          <Button
+            size="sm"
+            className="bg-brand-purple hover:bg-brand-purple/90 text-white"
+            onClick={state.startPortfolioGeneration}
+          >
+            <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+            Try Again
+          </Button>
+        </div>
+      </motion.main>
+    );
+  }
+
   return (
     <motion.main
       initial={{ opacity: 0 }}
