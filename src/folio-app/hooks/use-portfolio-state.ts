@@ -48,31 +48,64 @@ ${picLine}
 - Design vibe / style preference: ${wizardData.vibe || "Modern dark theme, clean layout."}`;
 }
 
-/** Stream from /api/generate and accumulate HTML chunks into a string. */
+/**
+ * ASSISTANT MESSAGE SENTINEL
+ * We never store raw HTML in apiMessages — it would instantly blow LLM token
+ * limits on revisions (especially on Groq). Instead we store a lightweight
+ * pointer that tells the model the layout is already rendered client-side.
+ */
+const ASSISTANT_SENTINEL =
+  "[Layout generated and stored in client preview. Awaiting your visual refinement commands. Reply with a single instruction like 'make the hero background midnight blue' or 'add a testimonials section'.]";
+
+/** Stream from /api/generate and accumulate delta chunks into full HTML. */
 async function streamPortfolioGeneration(
   messages: Array<{ role: "user" | "assistant"; content: string }>,
   onChunk: (partial: string) => void,
 ): Promise<string> {
+  // Detect HTTP errors BEFORE reading the body as a stream.
+  // A non-ok response body is plain JSON, not an SSE/text stream.
   const res = await fetch("/api/generate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ messages }),
   });
 
-  if (!res.ok || !res.body) {
-    const err = await res.json().catch(() => ({ error: "Generation failed." }));
-    throw new Error(err.error ?? "Generation failed.");
+  if (!res.ok) {
+    // The error body from our API route is always JSON { error: string }.
+    let message = `Request failed with status ${res.status}.`;
+    try {
+      const payload = await res.json();
+      if (typeof payload?.error === "string") message = payload.error;
+    } catch {
+      // ignore — use the default message
+    }
+    throw new Error(message);
   }
 
+  if (!res.body) {
+    throw new Error("Response body is empty.");
+  }
+
+  // toTextStreamResponse() emits raw UTF-8 TEXT DELTAS (not full snapshots).
+  // We must accumulate them ourselves to build the complete HTML string.
   const reader = res.body.getReader();
-  const decoder = new TextDecoder();
+  const decoder = new TextDecoder("utf-8");
   let fullHtml = "";
 
   while (true) {
     const { done, value } = await reader.read();
-    if (done) break;
-    const chunk = decoder.decode(value, { stream: true });
-    fullHtml += chunk;
+    if (done) {
+      // Flush any remaining bytes held by the streaming decoder.
+      const tail = decoder.decode();
+      if (tail) {
+        fullHtml += tail;
+        onChunk(fullHtml);
+      }
+      break;
+    }
+    // Each value is a Uint8Array delta — decode and append.
+    const delta = decoder.decode(value, { stream: true });
+    fullHtml += delta;
     onChunk(fullHtml);
   }
 
@@ -182,9 +215,11 @@ export function usePortfolioState() {
       setGenerationPhase("Publishing responsive sandbox DOM...");
 
       setGeneratedHtml(html);
+      // Store a sentinel instead of raw HTML to prevent token-limit blowout
+      // on iterative revision calls (especially critical for Groq).
       setApiMessages((prev) => [
         ...prev,
-        { role: "assistant", content: html },
+        { role: "assistant", content: ASSISTANT_SENTINEL },
       ]);
 
       setTimeout(() => {
@@ -222,9 +257,10 @@ export function usePortfolioState() {
       );
 
       setGeneratedHtml(html);
+      // Again — store only the sentinel, never raw HTML.
       setApiMessages((prev) => [
         ...prev,
-        { role: "assistant", content: html },
+        { role: "assistant", content: ASSISTANT_SENTINEL },
       ]);
 
       setChatHistory((prev) => [
