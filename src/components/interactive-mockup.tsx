@@ -8,6 +8,7 @@ import {
   RefreshCw,
   Upload,
 } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -292,17 +293,17 @@ export function InteractiveMockup() {
                   <span>&copy; 2026 John Doe.</span>
                   <span>
                     Built by{" "}
-                    <a
+                    <Link
                       href={
                         process.env.NEXT_PUBLIC_APP_URL ||
                         "https://folio.vercel.app"
                       }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline font-semibold hover:opacity-100 transition-opacity"
+                      className="underline font-semibold hover:opacity-100 transition-opacity inline-flex items-center gap-0.5"
                     >
-                      Folio ↗
-                    </a>
+                      Folio <ExternalLink className="h-2.5 w-2.5" />
+                    </Link>
                   </span>
                 </div>
               </div>
