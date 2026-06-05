@@ -40,7 +40,12 @@ export async function POST(req: NextRequest) {
 
   // Dynamic import prevents Next.js from bundling pdf-parse, which would break
   // its internal pdfjs version resolution.
-  const pdfParse = (await import("pdf-parse")).default;
+  const { default: pdfParse } = (await import("pdf-parse")) as unknown as {
+    default: (
+      buffer: Buffer,
+      options?: Record<string, unknown>,
+    ) => Promise<{ text: string }>;
+  };
 
   // Suppress noisy pdfjs-dist warnings that are harmless in a server context:
   //   - "Setting up fake worker" — expected when running without a Web Worker
