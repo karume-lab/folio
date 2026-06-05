@@ -156,6 +156,17 @@ export function usePortfolioState() {
     }
   }, []);
 
+  // Listen to live HTML edits sent from the preview iframe sandbox
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data && event.data.type === "HTML_EDITED") {
+        setGeneratedHtml(event.data.html);
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   const setView = (newView: ViewState) => {
     _setView(newView);
     if (typeof window !== "undefined") {
@@ -352,9 +363,7 @@ export function usePortfolioState() {
     setApiMessages(updatedMessages);
 
     try {
-      const html = await streamPortfolioGeneration(updatedMessages, (partial) =>
-        setGeneratedHtml(partial),
-      );
+      const html = await streamPortfolioGeneration(updatedMessages, () => {});
 
       setGeneratedHtml(html);
       // Again — store only the sentinel, never raw HTML.

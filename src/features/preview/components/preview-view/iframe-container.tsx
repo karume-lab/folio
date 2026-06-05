@@ -4,6 +4,44 @@ interface IframeContainerProps {
   generatedHtml: string;
 }
 
+function injectEditScript(html: string): string {
+  if (!html) return html;
+
+  const script = `
+<script id="folio-edit-script">
+  // Prevent links from navigating in preview mode
+  document.querySelectorAll('a').forEach(el => {
+    el.addEventListener('click', e => e.preventDefault());
+  });
+
+  // Make text elements editable
+  const tags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'a', 'button', 'li'];
+  tags.forEach(tag => {
+    document.querySelectorAll(tag).forEach(el => {
+      el.contentEditable = "true";
+      el.addEventListener('input', () => {
+        // Clone document to strip editing markers before sending
+        const clone = document.documentElement.cloneNode(true);
+        clone.querySelectorAll('[contenteditable]').forEach(c => c.removeAttribute('contenteditable'));
+        const scriptEl = clone.querySelector('#folio-edit-script');
+        if (scriptEl) scriptEl.remove();
+        
+        window.parent.postMessage({
+          type: 'HTML_EDITED',
+          html: '<!DOCTYPE html>\\n' + clone.outerHTML
+        }, '*');
+      });
+    });
+  });
+</script>
+`;
+
+  if (html.includes("</body>")) {
+    return html.replace("</body>", `${script}</body>`);
+  }
+  return html + script;
+}
+
 export function IframeContainer({ generatedHtml }: IframeContainerProps) {
   return (
     <div className="lg:col-span-8 h-full bg-black/40 flex items-center justify-center p-3 sm:p-5 overflow-hidden">
@@ -24,7 +62,7 @@ export function IframeContainer({ generatedHtml }: IframeContainerProps) {
         <iframe
           title="portfolio-preview"
           sandbox="allow-scripts"
-          srcDoc={generatedHtml}
+          srcDoc={injectEditScript(generatedHtml)}
           className="w-full h-[calc(100%-2.25rem)] border-0"
         />
       </div>
