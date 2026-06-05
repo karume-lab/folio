@@ -50,7 +50,14 @@ export async function POST(req: Request) {
 
       pdfParser.on("pdfParser_dataReady", () => {
         // pdf2json URI-encodes spaces and special characters in raw text.
-        const text = decodeURIComponent(pdfParser.getRawTextContent());
+        // However, PDFs can contain literal % signs that are not valid URI
+        // escape sequences (e.g. "80%"), which would cause decodeURIComponent
+        // to throw a URIError. We decode only well-formed %XX sequences and
+        // leave any bare/malformed percent signs untouched.
+        const raw = pdfParser.getRawTextContent();
+        const text = raw.replace(/%[0-9A-Fa-f]{2}/g, (match) =>
+          decodeURIComponent(match),
+        );
         resolve(NextResponse.json({ text }));
       });
 
