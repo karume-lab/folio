@@ -15,14 +15,22 @@ function getModel() {
     if (!key) {
       throw new Error("ANTHROPIC_API_KEY is not set in environment variables.");
     }
-    return anthropic("claude-3-5-sonnet-20240620");
+    const modelId = process.env.ANTHROPIC_MODEL;
+    if (!modelId) {
+      throw new Error("ANTHROPIC_MODEL is not set in environment variables.");
+    }
+    return anthropic(modelId);
   }
 
   const key = process.env.GROQ_API_KEY;
   if (!key) {
     throw new Error("GROQ_API_KEY is not set in environment variables.");
   }
-  return groq("llama-3.1-8b-instant");
+  const modelId = process.env.GROQ_MODEL;
+  if (!modelId) {
+    throw new Error("GROQ_MODEL is not set in environment variables.");
+  }
+  return groq(modelId);
 }
 
 export async function POST(req: NextRequest) {
