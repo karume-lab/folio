@@ -108,6 +108,11 @@ export async function POST(req: NextRequest) {
       messages,
       temperature: 0.7,
       maxOutputTokens: 8192,
+      onError: ({ error }) => {
+        // Re-throw so the stream closes with an error event instead of silently
+        // finishing — the client's reader will receive this via the error chunk.
+        throw error;
+      },
     });
 
     return result.toTextStreamResponse();

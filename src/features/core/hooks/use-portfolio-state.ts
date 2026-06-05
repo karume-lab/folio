@@ -126,6 +126,15 @@ async function streamPortfolioGeneration(
     onChunk(fullHtml);
   }
 
+  if (!fullHtml.trimStart().toLowerCase().startsWith("<!doctype")) {
+    // The stream completed but didn't return valid HTML — likely an upstream
+    // provider error (e.g. Groq 413) serialised into the stream body.
+    throw new Error(
+      fullHtml.trim() ||
+        "Generation failed: the model returned an empty or invalid response.",
+    );
+  }
+
   return fullHtml;
 }
 
