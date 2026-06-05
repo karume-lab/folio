@@ -7,9 +7,9 @@ export const metadataConfig: Metadata = {
     template: "Folio | %s",
   },
   description:
-    "Turn your professional CV into a stunning, customized, portable personal portfolio website in 60 seconds with the power of AI. Download as a single HTML file.",
+    "Turn your professional CV / Résumé into a stunning, customized, portable personal portfolio website in 60 seconds with the power of AI. Download as a single HTML file.",
   keywords: [
-    "CV builder",
+    "CV / Résumé builder",
     "portfolio builder",
     "AI portfolio",
     "instant portfolio",
@@ -55,9 +55,12 @@ const SEOConfig = () => {
     image: "https://folio.ai/icon.png",
     applicationCategory: "DesignApplication",
     operatingSystem: "Web",
-    keywords: ["AI Portfolio", "CV Builder", "Tailwind CSS", "shadcn/ui"].join(
-      ", ",
-    ),
+    keywords: [
+      "AI Portfolio",
+      "CV / Résumé Builder",
+      "Tailwind CSS",
+      "shadcn/ui",
+    ].join(", "),
     offers: {
       "@type": "Offer",
       price: "0",

@@ -46,9 +46,9 @@ export default function Home() {
             </h1>
 
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed">
-              Stop tweaking templates. Folio turns your existing CV into a
-              stunning, customized, portable portfolio in 60 seconds with the
-              power of AI.
+              Stop tweaking templates. Folio turns your existing CV / Résumé
+              into a stunning, customized, portable portfolio in 60 seconds with
+              the power of AI.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-20 w-full justify-center max-w-md">
@@ -167,10 +167,10 @@ export default function Home() {
                   1
                 </div>
                 <CardTitle className="text-lg text-foreground font-semibold">
-                  Drop Your CV
+                  Drop Your CV / Résumé
                 </CardTitle>
                 <CardDescription className="text-muted-foreground/80">
-                  Upload your professional PDF CV, or walk through our
+                  Upload your professional PDF CV / Résumé, or walk through our
                   4-question wizard to structure your credentials.
                 </CardDescription>
               </CardHeader>

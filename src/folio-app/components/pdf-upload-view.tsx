@@ -125,7 +125,7 @@ export function PdfUploadView({ state }: PdfUploadViewProps) {
               <>
                 <Upload className="h-10 w-10 text-muted-foreground/60 mb-3" />
                 <div className="text-sm font-semibold text-foreground mb-1">
-                  <span>Drag and drop your PDF CV</span>
+                  <span>Drag and drop your PDF CV / Résumé</span>
                 </div>
                 <p className="text-xs text-muted-foreground/75">
                   Supports PDF documents up to 10MB

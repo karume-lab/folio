@@ -95,12 +95,12 @@ export function InteractiveMockup() {
 
       {/* Interactive Mockup Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-1 p-2 md:p-4 min-h-125">
-        {/* Left Column: CV Input & Wizard controls */}
+        {/* Left Column: CV / Résumé Input & Wizard controls */}
         <div className="lg:col-span-5 flex flex-col gap-4 bg-secondary/50 border border-border/30 rounded-xl p-4 md:p-5">
           <div className="flex items-center justify-between pb-2 border-b border-border/30">
             <span className="font-semibold text-foreground flex items-center gap-1.5 text-sm">
               <FileText className="h-4 w-4 text-brand-purple" />
-              Source CV Context
+              Source CV / Résumé Context
             </span>
             <span className="text-xs text-muted-foreground/80">Input</span>
           </div>
@@ -120,7 +120,7 @@ export function InteractiveMockup() {
                 onClick={() => setSelectedFile(null)}
                 className="mt-3 text-[10px] text-brand-purple hover:text-brand-purple/80 underline"
               >
-                Clear and upload different CV
+                Clear and upload different CV / Résumé
               </button>
             )}
           </div>

@@ -45,8 +45,9 @@ export function SelectionView({ state }: SelectionViewProps) {
               Upload PDF Resume
             </CardTitle>
             <CardDescription className="text-muted-foreground/80 leading-relaxed text-sm">
-              Upload your ready-made CV PDF. Our processing engine will extract
-              your key credentials, achievements, and tech stack in seconds.
+              Upload your ready-made CV / Résumé PDF. Our processing engine will
+              extract your key credentials, achievements, and tech stack in
+              seconds.
             </CardDescription>
           </div>
           <div className="mt-8 flex items-center gap-1.5 text-xs text-brand-purple font-semibold">
