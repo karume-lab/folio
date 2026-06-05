@@ -20,7 +20,10 @@ export default async function SitePage({ params }: PageProps) {
 
   try {
     const db = getAdminFirestore();
-    const doc = await db.collection("deployments").doc(id).get();
+    const doc = await db
+      .collection(process.env.FIREBASE_DEPLOYMENTS_COLLECTION || "deployments")
+      .doc(id)
+      .get();
 
     if (!doc.exists) {
       notFound();

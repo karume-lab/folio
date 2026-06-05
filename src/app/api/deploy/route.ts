@@ -36,11 +36,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const docRef = await db.collection("deployments").add({
-      htmlContent,
-      userId,
-      createdAt: FieldValue.serverTimestamp(),
-    });
+    const docRef = await db
+      .collection(process.env.FIREBASE_DEPLOYMENTS_COLLECTION || "deployments")
+      .add({
+        htmlContent,
+        userId,
+        createdAt: FieldValue.serverTimestamp(),
+      });
 
     return NextResponse.json({ success: true, deploymentId: docRef.id });
   } catch (err) {
