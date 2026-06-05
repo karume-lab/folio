@@ -103,7 +103,8 @@ export function IterationBar({
             type="submit"
             size="icon"
             variant="ghost"
-            disabled={!chatInput.trim() || isRevising}
+            isLoading={isRevising}
+            disabled={!chatInput.trim()}
             className="absolute right-1 text-muted-foreground hover:text-brand-purple h-8 w-8 cursor-pointer rounded-lg shrink-0 disabled:opacity-30"
           >
             <Send className="h-4 w-4" />

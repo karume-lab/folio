@@ -163,22 +163,14 @@ export function PdfUploadView({ state }: PdfUploadViewProps) {
             >
               Clear and Restart
             </Button>
-            {/* [CHANGED] Disabled until PDF is parsed AND text is ready */}
             <Button
               type="button"
               className="flex-1 bg-brand-purple hover:bg-brand-purple/90 text-foreground font-semibold py-5 rounded-xl text-xs gap-2 shadow-lg shadow-brand-purple/15 disabled:opacity-50"
-              disabled={state.isParsingPdf || !state.pdfText}
+              isLoading={state.isParsingPdf}
+              disabled={!state.pdfText}
               onClick={state.startPortfolioGeneration}
             >
-              {state.isParsingPdf ? (
-                <>
-                  <RefreshCw className="h-4 w-4 animate-spin" /> Parsing PDF...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="h-4 w-4" /> Generate Portfolio
-                </>
-              )}
+              <RefreshCw className="h-4 w-4" /> Generate Portfolio
             </Button>
           </div>
         </Card>

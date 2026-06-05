@@ -8,7 +8,6 @@ import {
   Download,
   ExternalLink,
   Globe,
-  Loader2,
   X,
 } from "lucide-react";
 import { useState } from "react";
@@ -54,18 +53,10 @@ export function PreviewView({ state }: PreviewViewProps) {
             type="button"
             size="xs"
             className="bg-brand-pink hover:bg-brand-pink/90 text-foreground font-bold text-[10px] gap-1 px-3 h-7.5 rounded-xl shadow-md shadow-brand-pink/15 cursor-pointer disabled:opacity-60"
-            disabled={state.isDeploying}
+            isLoading={state.isDeploying}
             onClick={() => state.handleDeploySite(state.generatedHtml)}
           >
-            {state.isDeploying ? (
-              <>
-                <Loader2 className="h-3 w-3 animate-spin" /> Deploying...
-              </>
-            ) : (
-              <>
-                <Globe className="h-3 w-3" /> Deploy to Web
-              </>
-            )}
+            <Globe className="h-3 w-3" /> Deploy to Web
           </Button>
         </div>
       </div>

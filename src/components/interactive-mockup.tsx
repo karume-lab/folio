@@ -170,15 +170,11 @@ export function InteractiveMockup() {
               <Button
                 type="button"
                 className="w-full bg-brand-purple hover:bg-brand-purple/90 text-foreground font-medium gap-2 py-5 shadow-lg shadow-brand-purple/15"
-                disabled={isGenerating}
+                isLoading={isGenerating}
                 onClick={handleSimulateGeneration}
               >
-                <RefreshCw
-                  className={`h-4 w-4 ${isGenerating ? "animate-spin" : ""}`}
-                />
-                {isGenerating
-                  ? `Re-generating (${generationProgress}%)`
-                  : "Generate with Folio"}
+                <RefreshCw className="h-4 w-4" />
+                Generate with Folio
               </Button>
             </div>
           </div>
