@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
-    "format": "biome format --write"
+    "clean": "biome check --write",
+    "format": "biome format --write",
+    "lefthook": "lefthook",
+    "postinstall": "lefthook install"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.81",
@@ -40,6 +43,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "lefthook": "^2.1.9",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

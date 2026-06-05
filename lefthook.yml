@@ -1,0 +1,5 @@
+pre-commit:
+  commands:
+    biome:
+      run: bun clean
+      stage_fixed: true

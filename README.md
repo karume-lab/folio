@@ -93,3 +93,12 @@ The generation engine at `/api/generate` is rate-limited to prevent abuse:
 - **Client Resolution**: Clients are resolved by their logged-in User ID (if provided) or their remote IP address parsed from the `X-Forwarded-For` header.
 - **Exceeded Limit (HTTP 429)**: Responds with a standard JSON payload detailing the rate limit reset window (resetsInMinutes) to let the frontend update the loader gracefully.
 - **Dev Mode Support**: If Upstash keys are omitted in a local environment, rate limiting is skipped and logs a console warning.
+
+---
+
+## Git Hooks
+
+Lefthook is configured to automate code formatting and lint checking prior to commits:
+- **Hook Type**: pre-commit
+- **Automation**: Executes biome formatting and clean checks (`biome check --write`) on modified files and stages them automatically before committing.
+
