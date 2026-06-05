@@ -1,4 +1,5 @@
 import { anthropic } from "@ai-sdk/anthropic";
+import { google } from "@ai-sdk/google";
 import { groq } from "@ai-sdk/groq";
 import { type ModelMessage, streamText } from "ai";
 import { type NextRequest, NextResponse } from "next/server";
@@ -22,6 +23,17 @@ function getModel() {
     return anthropic(modelId);
   }
 
+  // Check for Google Generative AI API Key to use Gemini
+  const googleKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  if (googleKey) {
+    const modelId = process.env.GOOGLE_MODEL;
+    if (!modelId) {
+      throw new Error("GOOGLE_MODEL is not set in environment variables.");
+    }
+    return google(modelId);
+  }
+
+  // Fallback to Groq
   const key = process.env.GROQ_API_KEY;
   if (!key) {
     throw new Error("GROQ_API_KEY is not set in environment variables.");

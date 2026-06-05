@@ -73,7 +73,7 @@ export function IterationBar({
           {isRevising && (
             <div className="flex flex-col gap-1 max-w-[85%] mr-auto text-left">
               <span className="text-[9px] font-bold text-muted-foreground uppercase">
-                Folio Engine
+                Folio
               </span>
               <div className="bg-secondary/40 text-muted-foreground/90 border border-border/30 p-3 rounded-2xl rounded-tl-none flex items-center gap-2 text-xs">
                 <RefreshCw className="h-3.5 w-3.5 text-brand-purple animate-spin" />
