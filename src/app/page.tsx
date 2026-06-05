@@ -23,6 +23,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { VideoShowcase } from "@/components/video-showcase";
 import { cn } from "@/lib/utils";
 
 export default function Home() {
@@ -247,6 +248,10 @@ export default function Home() {
             </Card>
           </FadeIn>
         </div>
+
+        <FadeIn direction="up" delay={0.4} duration={0.8} className="mt-16">
+          <VideoShowcase />
+        </FadeIn>
       </section>
 
       {/* Feature Section */}
