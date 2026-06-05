@@ -1,7 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-
 interface IframeContainerProps {
   generatedHtml: string;
 }
@@ -20,9 +18,6 @@ export function IframeContainer({ generatedHtml }: IframeContainerProps) {
           <div className="bg-muted/40 border border-border/20 px-4 py-0.5 rounded text-[9px] truncate max-w-40 sm:max-w-xs">
             folio.ai/preview
           </div>
-          <Badge className="bg-success/15 border-success/30 text-success text-[8px] h-4 leading-none">
-            Live Template
-          </Badge>
         </div>
 
         {/* The Live Interactive Sandbox Iframe */}

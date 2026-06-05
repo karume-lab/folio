@@ -30,15 +30,17 @@ export function PreviewView({ state }: PreviewViewProps) {
     >
       {/* Preview Header Navbar */}
       <div className="h-14 border-b border-border/30 bg-card/65 px-4 flex items-center justify-between shrink-0 z-20">
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           type="button"
           onClick={() => state.setView("selection")}
-          className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground/90 hover:text-foreground transition-colors cursor-pointer"
+          className="gap-1.5 text-xs font-semibold text-muted-foreground/90 hover:text-foreground hover:bg-transparent -ml-3"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Editor
-        </button>
+        </Button>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 mr-12">
           <Button
             type="button"
             variant="outline"
@@ -145,13 +147,8 @@ function DeploySuccessModal({ url, onClose }: DeploySuccessModalProps) {
           <X className="h-4 w-4" />
         </button>
 
-        {/* Icon */}
-        <div className="h-14 w-14 rounded-2xl bg-brand-pink/10 border border-brand-pink/20 flex items-center justify-center mb-5">
-          <Globe className="h-7 w-7 text-brand-pink" />
-        </div>
-
         <h2 className="text-lg font-bold text-foreground mb-1">
-          Your portfolio is live! 🎉
+          Your portfolio is live!
         </h2>
         <p className="text-xs text-muted-foreground mb-6 leading-relaxed">
           Share this link with anyone. It's permanently hosted and doesn't
