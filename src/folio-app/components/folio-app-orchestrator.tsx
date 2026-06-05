@@ -2,8 +2,8 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
 import { GeneratingView } from "@/folio-app/components/generating-view";
 import { PdfUploadView } from "@/folio-app/components/pdf-upload-view";
 import { PreviewView } from "@/folio-app/components/preview-view";
@@ -18,7 +18,10 @@ export function FolioAppOrchestrator() {
     <div className="min-h-screen bg-background text-muted-foreground font-sans overflow-x-hidden selection:bg-brand-purple/20 selection:text-foreground relative flex flex-col justify-between">
       {/* Theme Toggle */}
       <div className="fixed top-4 right-4 z-50">
-        <ThemeToggle size="sm" className="bg-background/60 backdrop-blur-xl border border-border shadow-md" />
+        <ThemeToggle
+          size="sm"
+          className="bg-background/60 backdrop-blur-xl border border-border shadow-md"
+        />
       </div>
       {/* Background Glowing Ambient Orbs */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-150 pointer-events-none overflow-hidden z-0">

@@ -24,7 +24,9 @@ export function GeneratingView({ state }: GeneratingViewProps) {
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-xl font-bold text-foreground">Generation Failed</h1>
+          <h1 className="text-xl font-bold text-foreground">
+            Generation Failed
+          </h1>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
             {state.generationError}
           </p>

@@ -51,8 +51,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ text: result.text });
   } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Failed to parse PDF.";
+    const message = err instanceof Error ? err.message : "Failed to parse PDF.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

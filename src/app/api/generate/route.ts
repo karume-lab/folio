@@ -2,10 +2,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { groq } from "@ai-sdk/groq";
 import { type ModelMessage, streamText } from "ai";
 import { type NextRequest, NextResponse } from "next/server";
-import {
-  getGenerationRatelimiter,
-  resolveIdentifier,
-} from "@/lib/ratelimit";
+import { getGenerationRatelimiter, resolveIdentifier } from "@/lib/ratelimit";
 
 export const maxDuration = 60;
 
@@ -242,8 +239,7 @@ export async function POST(req: NextRequest) {
   const identifier = resolveIdentifier(req, body?.userId);
   try {
     const limiter = getGenerationRatelimiter();
-    const { success, limit, reset } =
-      await limiter.limit(identifier);
+    const { success, limit, reset } = await limiter.limit(identifier);
 
     if (!success) {
       const resetInMinutes = Math.ceil((reset - Date.now()) / 1000 / 60);

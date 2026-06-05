@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSessionRecovery } from "@/folio-app/hooks/use-session-recovery";
 import type { ChatMessage, ViewState, WizardData } from "@/folio-app/types";
 import { triggerHtmlDownload as downloadHtml } from "@/folio-app/utils/download";
+
 // MOCK_DEVOPS removed — real PDF text is now extracted via /api/parse-pdf
 
 const GENERATION_PHASES = [
