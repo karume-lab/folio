@@ -19,6 +19,7 @@ export function PdfUploadView({ state }: PdfUploadViewProps) {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // [CHANGED] Call handleExtractPdfText instead of just setting the filename
   const handlePdfFileDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingPdf(false);
@@ -27,14 +28,15 @@ export function PdfUploadView({ state }: PdfUploadViewProps) {
       file &&
       (file.type === "application/pdf" || file.name.endsWith(".pdf"))
     ) {
-      state.setPdfFileName(file.name);
+      state.handleExtractPdfText(file);
     }
   };
 
+  // [CHANGED] Same — trigger real extraction on file input change
   const handlePdfSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      state.setPdfFileName(file.name);
+      state.handleExtractPdfText(file);
     }
   };
 
@@ -83,10 +85,24 @@ export function PdfUploadView({ state }: PdfUploadViewProps) {
               className="hidden"
               onChange={handlePdfSelection}
             />
-            <Upload className="h-10 w-10 text-muted-foreground/60 mb-3" />
-            <div className="text-sm font-semibold text-foreground mb-1 flex items-center justify-center gap-2">
-              {state.pdfFileName ? (
-                <>
+
+            {/* [CHANGED] Three states: parsing / file+text ready / idle */}
+            {state.isParsingPdf ? (
+              // Loading state while pdf-parse runs on the server
+              <>
+                <RefreshCw className="h-9 w-9 text-brand-purple animate-spin mb-3" />
+                <p className="text-sm font-semibold text-foreground">
+                  Extracting resume text...
+                </p>
+                <p className="text-xs text-muted-foreground/70 mt-1">
+                  This only takes a moment.
+                </p>
+              </>
+            ) : state.pdfFileName && state.pdfText ? (
+              // Extraction succeeded — show filename + clear button
+              <>
+                <Upload className="h-10 w-10 text-brand-purple/70 mb-3" />
+                <div className="text-sm font-semibold text-foreground mb-1 flex items-center justify-center gap-2">
                   <span>{state.pdfFileName}</span>
                   <button
                     type="button"
@@ -99,16 +115,23 @@ export function PdfUploadView({ state }: PdfUploadViewProps) {
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
-                </>
-              ) : (
-                <span>Drag and drop your PDF CV</span>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground/75">
-              {state.pdfFileName
-                ? "Click to change file"
-                : "Supports PDF documents up to 10MB"}
-            </p>
+                </div>
+                <p className="text-xs text-brand-purple/80 font-medium">
+                  ✓ Resume text extracted — ready to generate
+                </p>
+              </>
+            ) : (
+              // Idle / no file selected
+              <>
+                <Upload className="h-10 w-10 text-muted-foreground/60 mb-3" />
+                <div className="text-sm font-semibold text-foreground mb-1">
+                  <span>Drag and drop your PDF CV</span>
+                </div>
+                <p className="text-xs text-muted-foreground/75">
+                  Supports PDF documents up to 10MB
+                </p>
+              </>
+            )}
           </div>
 
           {/* Profile Pic Upload */}
@@ -140,13 +163,22 @@ export function PdfUploadView({ state }: PdfUploadViewProps) {
             >
               Clear and Restart
             </Button>
+            {/* [CHANGED] Disabled until PDF is parsed AND text is ready */}
             <Button
               type="button"
               className="flex-1 bg-brand-purple hover:bg-brand-purple/90 text-foreground font-semibold py-5 rounded-xl text-xs gap-2 shadow-lg shadow-brand-purple/15 disabled:opacity-50"
-              disabled={!state.pdfFileName}
+              disabled={state.isParsingPdf || !state.pdfText}
               onClick={state.startPortfolioGeneration}
             >
-              <RefreshCw className="h-4 w-4" /> Generate Portfolio
+              {state.isParsingPdf ? (
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin" /> Parsing PDF...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-4 w-4" /> Generate Portfolio
+                </>
+              )}
             </Button>
           </div>
         </Card>

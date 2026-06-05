@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSessionRecovery } from "@/folio-app/hooks/use-session-recovery";
 import type { ChatMessage, ViewState, WizardData } from "@/folio-app/types";
 import { triggerHtmlDownload as downloadHtml } from "@/folio-app/utils/download";
-import { MOCK_DEVOPS } from "@/folio-app/utils/mock-data";
+// MOCK_DEVOPS removed — real PDF text is now extracted via /api/parse-pdf
 
 const GENERATION_PHASES = [
   { max: 20, text: "Analyzing input constraints..." },
@@ -17,26 +17,35 @@ const GENERATION_PHASES = [
 /** Build the user message content sent to the generation API. */
 function buildUserPrompt(opts: {
   pdfFileName: string | null;
+  // [CHANGED] pdfText replaces MOCK_DEVOPS — real extracted resume text
+  pdfText: string | null;
   profilePic: string | null;
   personalizationPrompt: string;
   wizardData: WizardData;
 }): string {
-  const { pdfFileName, profilePic, personalizationPrompt, wizardData } = opts;
+  const {
+    pdfFileName,
+    pdfText,
+    profilePic,
+    personalizationPrompt,
+    wizardData,
+  } = opts;
 
   const picLine = profilePic
     ? `Profile picture URL: ${profilePic}`
     : "No profile picture provided.";
 
-  if (pdfFileName) {
+  // [CHANGED] Use real extracted PDF text instead of MOCK_DEVOPS
+  if (pdfFileName && pdfText) {
     return `Generate a professional portfolio website based on the following details.
 ${picLine}
-PDF Resume filename: ${pdfFileName}
-Developer profile (extracted mock data):
-- Name: ${MOCK_DEVOPS.name}
-- Headline: ${MOCK_DEVOPS.headline}
-- Achievements: ${MOCK_DEVOPS.achievements}
-- Skills: ${MOCK_DEVOPS.skills}
-Design preferences / personalization: ${personalizationPrompt || "Modern dark theme, clean layout."}`;
+Design preferences / personalization: ${personalizationPrompt || "Modern dark theme, clean layout."}
+
+Here is the raw text extracted from the user's resume PDF. Parse this to understand their Name, Headline, Skills, and Achievements.
+
+Raw Resume Text:
+
+${pdfText}`;
   }
 
   return `Generate a professional portfolio website based on the following details.
@@ -139,6 +148,10 @@ export function usePortfolioState() {
   );
   const [generationError, setGenerationError] = useState<string | null>(null);
 
+  // [NEW] PDF extraction state
+  const [pdfText, setPdfText] = useState<string | null>(null);
+  const [isParsingPdf, setIsParsingPdf] = useState(false);
+
   // Compiled portfolio outputs
   const [generatedHtml, setGeneratedHtml] = useState("");
   const [chatInput, setChatInput] = useState("");
@@ -166,6 +179,39 @@ export function usePortfolioState() {
       setWizardData,
     });
 
+  // [NEW] Extract text from uploaded PDF via /api/parse-pdf
+  const handleExtractPdfText = async (file: File) => {
+    setIsParsingPdf(true);
+    setPdfFileName(file.name);
+    setPdfText(null);
+
+    const formData = new FormData();
+    formData.append("pdf", file);
+
+    try {
+      const res = await fetch("/api/parse-pdf", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const payload = await res.json().catch(() => ({}));
+        throw new Error(payload.error ?? `Parse failed (${res.status})`);
+      }
+
+      const data = await res.json();
+      setPdfText(data.text ?? null);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "PDF extraction failed.";
+      // Surface the error in the UI without blocking the user entirely
+      console.error("[parse-pdf]", msg);
+      setPdfFileName(null);
+      setPdfText(null);
+    } finally {
+      setIsParsingPdf(false);
+    }
+  };
+
   /** Animate the progress bar independently during streaming */
   const runProgressAnimation = (): (() => void) => {
     setGenerationProgress(0);
@@ -173,9 +219,10 @@ export function usePortfolioState() {
 
     const interval = setInterval(() => {
       // Slow down as we approach 90% — let the real completion trigger 100%
-      const increment = current < 70
-        ? Math.floor(Math.random() * 6) + 3
-        : Math.floor(Math.random() * 2) + 1;
+      const increment =
+        current < 70
+          ? Math.floor(Math.random() * 6) + 3
+          : Math.floor(Math.random() * 2) + 1;
       current = Math.min(current + increment, 92);
       setGenerationProgress(current);
       const phase = GENERATION_PHASES.find((p) => current <= p.max);
@@ -192,22 +239,23 @@ export function usePortfolioState() {
 
     const userPrompt = buildUserPrompt({
       pdfFileName,
+      pdfText, // [CHANGED] real extracted text replaces MOCK_DEVOPS
       profilePic,
       personalizationPrompt,
       wizardData,
     });
 
-    const initialMessages: Array<{ role: "user" | "assistant"; content: string }> = [
-      { role: "user", content: userPrompt },
-    ];
+    const initialMessages: Array<{
+      role: "user" | "assistant";
+      content: string;
+    }> = [{ role: "user", content: userPrompt }];
     setApiMessages(initialMessages);
 
     const stopProgress = runProgressAnimation();
 
     try {
-      const html = await streamPortfolioGeneration(
-        initialMessages,
-        (partial) => setGeneratedHtml(partial),
+      const html = await streamPortfolioGeneration(initialMessages, (partial) =>
+        setGeneratedHtml(partial),
       );
 
       stopProgress();
@@ -244,16 +292,15 @@ export function usePortfolioState() {
     setChatHistory((prev) => [...prev, { sender: "user", text: userText }]);
     setIsRevising(true);
 
-    const updatedMessages: Array<{ role: "user" | "assistant"; content: string }> = [
-      ...apiMessages,
-      { role: "user", content: userText },
-    ];
+    const updatedMessages: Array<{
+      role: "user" | "assistant";
+      content: string;
+    }> = [...apiMessages, { role: "user", content: userText }];
     setApiMessages(updatedMessages);
 
     try {
-      const html = await streamPortfolioGeneration(
-        updatedMessages,
-        (partial) => setGeneratedHtml(partial),
+      const html = await streamPortfolioGeneration(updatedMessages, (partial) =>
+        setGeneratedHtml(partial),
       );
 
       setGeneratedHtml(html);
@@ -291,6 +338,10 @@ export function usePortfolioState() {
     setView,
     pdfFileName,
     setPdfFileName,
+    // [NEW] PDF extraction state + handler
+    pdfText,
+    isParsingPdf,
+    handleExtractPdfText,
     profilePic,
     setProfilePic,
     personalizationPrompt,
