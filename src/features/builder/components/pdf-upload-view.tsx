@@ -43,13 +43,15 @@ export function PdfUploadView({ state }: PdfUploadViewProps) {
   return (
     <MotionWrapper>
       <div className="max-w-2xl mx-auto px-6 py-6 pb-10 w-full">
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => state.setView("selection")}
-          className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground/90 hover:text-foreground mb-8 transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground/90 hover:text-foreground mb-8 transition-colors cursor-pointer px-2"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to choices
-        </button>
+        </Button>
 
         <Card className="bg-card/45 border-border/40 shadow-xl backdrop-blur-xl p-6 md:p-8 rounded-2xl space-y-6">
           <div className="space-y-2">
@@ -104,17 +106,19 @@ export function PdfUploadView({ state }: PdfUploadViewProps) {
                 <Upload className="h-10 w-10 text-brand-purple/70 mb-3" />
                 <div className="text-sm font-semibold text-foreground mb-1 flex items-center justify-center gap-2">
                   <span>{state.pdfFileName}</span>
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon-xs"
                     onClick={(e) => {
                       e.stopPropagation();
                       state.setPdfFileName(null);
                     }}
-                    className="p-1 rounded-md hover:bg-muted/80 text-muted-foreground hover:text-brand-pink transition-colors cursor-pointer shrink-0"
+                    className="hover:bg-muted/80 text-muted-foreground hover:text-brand-pink transition-colors cursor-pointer shrink-0"
                     title="Remove file"
                   >
                     <Trash2 className="h-4 w-4" />
-                  </button>
+                  </Button>
                 </div>
                 <p className="text-xs text-brand-purple/80 font-medium">
                   ✓ Resume text extracted — ready to generate

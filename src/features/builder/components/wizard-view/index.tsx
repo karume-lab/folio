@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StepFields } from "@/features/builder/components/wizard-view/step-fields";
 import { WizardNav } from "@/features/builder/components/wizard-view/wizard-nav";
@@ -21,13 +22,15 @@ export function WizardView({ state }: WizardViewProps) {
     >
       {/* Wizard Nav Info */}
       <div className="flex justify-between items-center mb-8">
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => state.setView("selection")}
-          className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground/90 hover:text-foreground transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground/90 hover:text-foreground transition-colors cursor-pointer px-2"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Quit Wizard
-        </button>
+        </Button>
         <span className="text-xs text-muted-foreground font-medium bg-secondary/80 border border-border/30 px-3 py-1 rounded-full">
           Step {state.wizardStep} of 5
         </span>

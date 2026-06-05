@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Plus, X } from "lucide-react";
 import { useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { compressImage } from "@/lib/image-utils";
 
 interface AvatarStepProps {
@@ -79,16 +80,17 @@ export function AvatarStep({ profilePic, setProfilePic }: AvatarStepProps) {
               alt="avatar"
               className="h-full w-full object-cover"
             />
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={(e) => {
                 e.stopPropagation();
                 setProfilePic(null);
               }}
-              className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white"
+              className="absolute inset-0 bg-black/40 hover:bg-black/60 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white rounded-none border-0"
             >
               <X className="h-4 w-4" />
-            </button>
+            </Button>
           </div>
         ) : (
           <Plus className="h-10 w-10 text-muted-foreground/50 border border-dashed rounded-full p-2 shrink-0 mb-3" />

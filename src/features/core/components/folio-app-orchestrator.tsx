@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { PdfUploadView } from "@/features/builder/components/pdf-upload-view";
@@ -36,8 +36,17 @@ export function FolioAppOrchestrator() {
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
-            className="fixed bottom-6 right-6 z-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-border bg-card/90 p-4.5 shadow-2xl backdrop-blur-xl max-w-md w-[calc(100vw-3rem)]"
+            className="fixed bottom-6 right-6 z-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-border bg-card/90 p-4.5 pr-10 shadow-2xl backdrop-blur-xl max-w-md w-[calc(100vw-3rem)]"
           >
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={() => state.setToast(null)}
+              className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
+              aria-label="Dismiss notification"
+            >
+              <X className="h-4 w-4" />
+            </Button>
             <div className="flex items-center gap-2 text-foreground">
               <AlertCircle className="h-5 w-5 text-brand-pink shrink-0" />
               <span className="text-sm font-medium">{state.toast.message}</span>

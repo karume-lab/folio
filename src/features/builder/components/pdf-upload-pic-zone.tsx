@@ -2,6 +2,7 @@
 
 import { Plus, X } from "lucide-react";
 import { useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { compressImage } from "@/lib/image-utils";
 
@@ -79,16 +80,17 @@ export function PdfUploadPicZone({
               alt="avatar preview"
               className="h-full w-full object-cover"
             />
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={(e) => {
                 e.stopPropagation();
                 setProfilePic(null);
               }}
-              className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white"
+              className="absolute inset-0 bg-black/40 hover:bg-black/60 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white rounded-none border-0"
             >
               <X className="h-3 w-3" />
-            </button>
+            </Button>
           </div>
         ) : (
           <Plus className="h-8 w-8 text-muted-foreground/50 border border-dashed rounded-full p-1.5 shrink-0" />
