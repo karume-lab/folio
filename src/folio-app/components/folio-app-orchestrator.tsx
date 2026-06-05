@@ -15,7 +15,7 @@ export function FolioAppOrchestrator() {
   const state = usePortfolioState();
 
   return (
-    <div className="min-h-screen bg-background text-muted-foreground font-sans overflow-x-hidden selection:bg-brand-purple/20 selection:text-foreground relative flex flex-col justify-between">
+    <div className="h-screen bg-background text-muted-foreground font-sans overflow-hidden selection:bg-brand-purple/20 selection:text-foreground relative flex flex-col">
       {/* Theme Toggle */}
       <div className="fixed top-4 right-4 z-50">
         <ThemeToggle
@@ -64,7 +64,7 @@ export function FolioAppOrchestrator() {
       </AnimatePresence>
 
       {/* Main UI Stage Router */}
-      <div className="flex-1 w-full flex flex-col justify-center relative z-10">
+      <div className="flex-1 w-full flex flex-col justify-center relative z-10 overflow-hidden">
         <AnimatePresence mode="wait">
           {state.view === "selection" && <SelectionView state={state} />}
 

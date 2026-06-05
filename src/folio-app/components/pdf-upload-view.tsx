@@ -42,7 +42,7 @@ export function PdfUploadView({ state }: PdfUploadViewProps) {
 
   return (
     <MotionWrapper>
-      <div className="max-w-2xl mx-auto px-6 py-12 w-full">
+      <div className="max-w-2xl mx-auto px-6 py-6 pb-10 w-full">
         <button
           type="button"
           onClick={() => state.setView("selection")}
@@ -186,7 +186,7 @@ function MotionWrapper({ children }: { children: React.ReactNode }) {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="w-full flex justify-center"
+      className="w-full h-full flex items-center justify-center"
     >
       {children}
     </motion.main>
