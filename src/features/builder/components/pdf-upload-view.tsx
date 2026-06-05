@@ -42,18 +42,20 @@ export function PdfUploadView({ state }: PdfUploadViewProps) {
 
   return (
     <MotionWrapper>
-      <div className="max-w-2xl mx-auto px-6 py-6 pb-10 w-full">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => state.setView("selection")}
-          className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground/90 hover:text-foreground mb-8 transition-colors cursor-pointer px-2"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to choices
-        </Button>
+      <div className="max-w-2xl mx-auto w-full flex flex-col max-h-full">
+        <div className="flex-none mb-6">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => state.setView("selection")}
+            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground/90 hover:text-foreground transition-colors cursor-pointer px-2"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> Back to choices
+          </Button>
+        </div>
 
-        <Card className="bg-card/45 border-border/40 shadow-xl backdrop-blur-xl p-6 md:p-8 rounded-2xl space-y-6">
+        <Card className="bg-card/45 border-border/40 shadow-xl backdrop-blur-xl p-6 md:p-8 rounded-2xl space-y-6 overflow-y-auto shrink">
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-foreground">
               Upload Resume PDF
@@ -190,7 +192,7 @@ function MotionWrapper({ children }: { children: React.ReactNode }) {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="w-full h-full flex items-center justify-center"
+      className="w-full h-full flex items-center justify-center overflow-hidden p-4 md:p-8"
     >
       {children}
     </motion.main>
