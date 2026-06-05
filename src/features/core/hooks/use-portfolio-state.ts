@@ -8,11 +8,11 @@ import { triggerHtmlDownload as downloadHtml } from "@/features/preview/utils/do
 // MOCK_DEVOPS removed — real PDF text is now extracted via /api/parse-pdf
 
 const GENERATION_PHASES = [
-  { max: 20, text: "Analyze input constraints" },
-  { max: 45, text: "Extract credentials and keywords" },
-  { max: 70, text: "Compile layout aesthetics" },
-  { max: 90, text: "Write Tailwind styling classes" },
-  { max: 100, text: "Publish responsive sandbox DOM" },
+  { max: 20, text: "Reading your request..." },
+  { max: 45, text: "Finding the best layout for you..." },
+  { max: 70, text: "Designing your personal brand..." },
+  { max: 90, text: "Polishing details and animations..." },
+  { max: 100, text: "Adding the finishing touches..." },
 ];
 
 /** Build the user message content sent to the generation API. */
@@ -192,7 +192,7 @@ export function usePortfolioState() {
   // Generating Screen progress
   const [generationProgress, setGenerationProgress] = useState(0);
   const [generationPhase, setGenerationPhase] = useState(
-    "Initialize generator context",
+    "Getting things ready...",
   );
   const [generationError, setGenerationError] = useState<string | null>(null);
 
@@ -313,7 +313,7 @@ export function usePortfolioState() {
 
       stopProgress();
       setGenerationProgress(100);
-      setGenerationPhase("Publish responsive sandbox DOM");
+      setGenerationPhase("Adding the finishing touches...");
 
       setGeneratedHtml(html);
       // Store a sentinel instead of raw HTML to prevent token-limit blowout

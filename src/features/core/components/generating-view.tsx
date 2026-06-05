@@ -70,7 +70,7 @@ export function GeneratingView({ state }: GeneratingViewProps) {
 
       <div className="space-y-2">
         <h1 className="text-xl font-bold text-foreground">
-          Build portfolio layout
+          Creating your portfolio
         </h1>
         <p className="text-xs text-muted-foreground/80 italic font-mono h-4">
           {state.generationPhase}
@@ -83,7 +83,7 @@ export function GeneratingView({ state }: GeneratingViewProps) {
           className="h-1.5 w-full bg-muted"
         />
         <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground/60">
-          <span>Compilation Status</span>
+          <span>Progress</span>
           <span>{state.generationProgress}%</span>
         </div>
       </div>
