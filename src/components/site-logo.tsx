@@ -30,6 +30,7 @@ export function SiteLogo({
         src="/logo.png"
         className={cn("object-contain rounded-full", imageClassName)}
         alt="Folio Logo"
+        priority
       />
       {showText && (
         <span className="text-xl font-bold tracking-tight text-foreground font-sans">

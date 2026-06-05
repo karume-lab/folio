@@ -1,0 +1,74 @@
+"use client";
+
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { GeneratingView } from "@/folio-app/components/generating-view";
+import { PdfUploadView } from "@/folio-app/components/pdf-upload-view";
+import { PreviewView } from "@/folio-app/components/preview-view";
+import { SelectionView } from "@/folio-app/components/selection-view";
+import { WizardView } from "@/folio-app/components/wizard-view";
+import { usePortfolioState } from "@/folio-app/hooks/use-portfolio-state";
+
+export function FolioAppOrchestrator() {
+  const state = usePortfolioState();
+
+  return (
+    <div className="min-h-screen bg-background text-muted-foreground font-sans overflow-x-hidden selection:bg-brand-purple/20 selection:text-foreground dark relative flex flex-col justify-between">
+      {/* Background Glowing Ambient Orbs */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-150 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[20%] w-[35%] h-[55%] rounded-full bg-brand-purple/10 blur-[130px]" />
+        <div className="absolute top-[-5%] right-[20%] w-[35%] h-[50%] rounded-full bg-brand-pink/10 blur-[120px]" />
+      </div>
+
+      {/* Persistent Toast Recovery Overlay */}
+      <AnimatePresence>
+        {state.toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30, scale: 0.95 }}
+            className="fixed bottom-6 right-6 z-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-border bg-card/90 p-4.5 shadow-2xl backdrop-blur-xl max-w-md w-[calc(100vw-3rem)]"
+          >
+            <div className="flex items-center gap-2 text-foreground">
+              <AlertCircle className="h-5 w-5 text-brand-pink shrink-0" />
+              <span className="text-sm font-medium">{state.toast.message}</span>
+            </div>
+            <div className="flex gap-2 w-full sm:w-auto shrink-0 justify-end mt-2 sm:mt-0">
+              <Button
+                size="xs"
+                className="bg-brand-purple text-foreground hover:bg-brand-purple/90 font-bold px-3.5 py-1 text-xs"
+                onClick={state.handleResumeSession}
+              >
+                Resume
+              </Button>
+              <Button
+                variant="outline"
+                size="xs"
+                className="border-border text-foreground hover:bg-secondary font-semibold px-3 py-1 text-xs"
+                onClick={state.handleStartFresh}
+              >
+                Start Fresh
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Main UI Stage Router */}
+      <div className="flex-1 w-full flex flex-col justify-center relative z-10">
+        <AnimatePresence mode="wait">
+          {state.view === "selection" && <SelectionView state={state} />}
+
+          {state.view === "pdf-upload" && <PdfUploadView state={state} />}
+
+          {state.view === "wizard" && <WizardView state={state} />}
+
+          {state.view === "generating" && <GeneratingView state={state} />}
+
+          {state.view === "preview" && <PreviewView state={state} />}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
