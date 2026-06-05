@@ -54,11 +54,11 @@ export default function Image() {
             style={{
               width: 80,
               height: 80,
-              marginRight: 24,
+              marginRight: 12,
               objectFit: "contain",
             }}
           />
-          Folio
+          olio
         </div>
         <h1
           style={{

@@ -114,11 +114,11 @@ export default async function Image({ params }: Props) {
           style={{
             width: 40,
             height: 40,
-            marginRight: 16,
+            marginRight: 8,
             objectFit: "contain",
           }}
         />
-        Folio
+        olio
       </div>
     </div>,
     {

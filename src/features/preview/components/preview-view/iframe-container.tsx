@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 interface IframeContainerProps {
   generatedHtml: string;
 }
@@ -43,6 +45,26 @@ function injectEditScript(html: string): string {
 }
 
 export function IframeContainer({ generatedHtml }: IframeContainerProps) {
+  const [srcDoc, setSrcDoc] = useState(() => injectEditScript(generatedHtml));
+  const lastCleanHtmlRef = useRef(generatedHtml);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data && event.data.type === "HTML_EDITED") {
+        lastCleanHtmlRef.current = event.data.html;
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  useEffect(() => {
+    if (generatedHtml !== lastCleanHtmlRef.current) {
+      lastCleanHtmlRef.current = generatedHtml;
+      setSrcDoc(injectEditScript(generatedHtml));
+    }
+  }, [generatedHtml]);
+
   return (
     <div className="lg:col-span-8 h-full bg-black/40 flex items-center justify-center p-3 sm:p-5 overflow-hidden">
       <div className="h-full w-full max-w-2xl bg-card border border-border/30 rounded-2xl overflow-hidden shadow-2xl relative">
@@ -62,7 +84,7 @@ export function IframeContainer({ generatedHtml }: IframeContainerProps) {
         <iframe
           title="portfolio-preview"
           sandbox="allow-scripts"
-          srcDoc={injectEditScript(generatedHtml)}
+          srcDoc={srcDoc}
           className="w-full h-[calc(100%-2.25rem)] border-0"
         />
       </div>

@@ -20,7 +20,7 @@ export function SiteLogo({
       href={href}
       className={cn(
         "flex items-center justify-center select-none rounded-full",
-        showText && "gap-2",
+        showText && "gap-1",
         className,
       )}
     >
@@ -34,7 +34,7 @@ export function SiteLogo({
       />
       {showText && (
         <span className="text-xl font-bold tracking-tight text-foreground font-sans">
-          Folio
+          olio
         </span>
       )}
     </Link>
